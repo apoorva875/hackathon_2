@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scrap Seller Website</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #search-form {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #search-input {
+      padding: 10px;
+      width: 300px;
+    }
+
+    #items-container {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .item-card {
+      width: 300px;
+      padding: 10px;
+      margin: 40px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background-color: #c0c019;
+    }
+
+    .item-card h3 {
+      margin: 0;
+      color: #333;
+    }
+
+    .item-card p {
+      margin: 5px 0;
+      color: #777;
+    }
+
+    .item-card .contact-btn {
+      background-color: #100f11;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scrap Seller Website</h1>
+
+  <div id="search-form">
+    <input type="text" id="search-input" placeholder="Search for scrap items...">
+    <button onclick="searchItems()">Search</button>
+  </div>
+
+  <div id="items-container">
+    <!-- Item cards will be dynamically added here -->
+  </div>
+
+  <script>
+    // Sample data - Replace this with actual data from your backend
+    const itemsData = [
+      {
+        name: "Plastic",
+        description: "packaging plastic scrap",
+        price: "Rs 160 per kg",
+        contact: "john@example.com",
+		unit: "Rupees",
+      },
+      {
+        name: "Paper",
+        description: "packaging plastic waste",
+        price: "Rs 50 per kg",
+        contact: "jane@example.com", 
+		unit: "Rupees",
+      },
+      {
+        name: "Boxes",
+        description: "packaging boxes",
+        price: "Rs 100 per kg",
+        contact: "mike@example.com",
+		unit: "Rupees",
+      },
+	  {
+        name: "card-board",
+        description: "packaging cardboards",
+        price: "Rs 300 per kg",
+        contact: "mike@example.com",
+		unit: "Rupees",
+      },
+	  {
+        name: "others",
+        description: "foam,thermacoal,paper void fills",
+        price: "Rs 100 per kg",
+        contact: "mike@example.com",
+		unit: "Rupees",
+      },
+    ];
+
+    function searchItems() {
+      const searchInput = document.getElementById("search-input");
+      const searchTerm = searchInput.value.toLowerCase();
+
+      const filteredItems = itemsData.filter(item =>
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.description.toLowerCase().includes(searchTerm)
+      );
+
+      displayItems(filteredItems);
+    }
+
+    function displayItems(items) {
+      const itemsContainer = document.getElementById("items-container");
+      itemsContainer.innerHTML = "";
+
+      items.forEach(item => {
+        const itemCard = document.createElement("div");
+        itemCard.className = "item-card";
+        itemCard.innerHTML = `
+  <h3>${item.name}</h3>
+  <p>${item.description}</p>
+  <p>Price: ${item.price}</p>
+  <input type="number" class="quantity-input" placeholder="Enter quantity">
+  <button class="contact-btn" onclick="calculateCost('${item.name}', '${item.price}', event)">Calculate Cost</button>
+`;
+
+
+        itemsContainer.appendChild(itemCard);
+      });
+    }
+
+    function contactSeller(email) {
+      alert(`Contact the seller at: ${email}`);
+    }
+
+    // Display all items initially
+    displayItems(itemsData);
+    function calculateCost(itemName, price, event) {
+  const quantityInput = event.target.parentElement.querySelector(".quantity-input");
+  const quantity = parseFloat(quantityInput.value);
+
+  // Convert the price to a numeric value
+  const numericPrice = parseFloat(price.split(" ")[1]);
+
+  if (!isNaN(quantity) && quantity > 0) {
+    const cost = quantity * numericPrice;
+    alert(`The cost of ${quantity} ${itemName}(s) is Rs ${cost.toFixed(2)}`);
+  } else {
+    alert('Please enter a valid quantity');
+  }
+}
+let sellItems = [];
+
+function generateCoupon() {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  let coupon = "";
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    coupon += characters.charAt(randomIndex);
+  }
+  return coupon;
+}
+
+function sellItem(itemName) {
+  sellItems.push(itemName);
+  alert(`You added ${itemName} to sell.`);
+}
+
+function displayItems(items) {
+  const itemsContainer = document.getElementById("items-container");
+  itemsContainer.innerHTML = "";
+
+  items.forEach(item => {
+    const itemCard = document.createElement("div");
+    itemCard.className = "item-card";
+    itemCard.innerHTML = `
+      <h3>${item.name}</h3>
+      <p>${item.description}</p>
+      <p>Price: ${item.price}</p>
+      <input type="number" class="quantity-input" placeholder="Enter quantity">
+      <button class="contact-btn" onclick="calculateCost('${item.name}', '${item.price}', event)">Calculate Cost</button>
+      <button class="contact-btn" onclick="sellItem('${item.name}')">Add to Sell</button>
+    `;
+
+    itemsContainer.appendChild(itemCard);
+  });
+
+  const sellButton = document.createElement("button");
+  sellButton.className = "contact-btn";
+  sellButton.textContent = "Sell";
+  sellButton.addEventListener("click", function() {
+    if (sellItems.length > 0) {
+      const coupon = generateCoupon();
+      let sellMessage = "Congratulations! You sold the following items:\n\n";
+      sellItems.forEach(item => {
+        sellMessage += `${item}\n`;
+      });
+      sellMessage += `\nYour coupon code is: ${coupon}`;
+      alert(sellMessage);
+      sellItems = [];
+    } else {
+      alert('Please add at least one item to sell.');
+    }
+  });
+
+  itemsContainer.appendChild(sellButton);
+}
+
+
+
+
+function displayItems(items) {
+  const itemsContainer = document.getElementById("items-container");
+  itemsContainer.innerHTML = "";
+
+  items.forEach(item => {
+    const itemCard = document.createElement("div");
+    itemCard.className = "item-card";
+    itemCard.innerHTML = `
+      <h3>${item.name}</h3>
+      <p>${item.description}</p>
+      <p>Price: ${item.price}</p>
+      <input type="number" class="quantity-input" placeholder="Enter quantity">
+      <button class="contact-btn" onclick="calculateCost('${item.name}', '${item.price}', event)">Calculate Cost</button>
+      <button class="contact-btn" onclick="sellItem('${item.name}')">Sell</button>
+    `;
+
+    itemsContainer.appendChild(itemCard);
+  });
+}
+   // Display all items initially
+    displayItems(itemsData);
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Map Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style type="text/css">
+
+/* map needs width and height to appear */
+#map {
+	width: 900px;
+	max-width: 100%;
+	height: 580px;
+	float: right;
+}
+
+</style>
+
+</head>
+<body>
+<!-- this div will hold your map -->
+<div id="map"></div>
+<h3>LOCATE YOUR NEAREST WASTE RECYCLING PLANT !</h3>
+<script>
+function initMap() {
+	var myMapCenter = {lat: 15.3173, lng: 75.7139};
+
+	// Create a map object and specify the DOM element for display.
+	var map = new google.maps.Map(document.getElementById('map'), {
+		center: myMapCenter,
+		zoom: 6.8
+	});
+
+	var infoWindow = new google.maps.InfoWindow(); // Info window to display store information
+
+	function markStores(stores) {
+		stores.forEach(function(storeInfo) {
+			// Create a marker and set its position.
+			var marker = new google.maps.Marker({
+				map: map,
+				position: storeInfo.location,
+				title: storeInfo.name
+			});
+
+			// Show store info in info window when marker is clicked
+			marker.addListener('click', function() {
+				infoWindow.setContent(getStoreInfoHTML(storeInfo));
+				infoWindow.open(map, marker);
+			});
+		});
+	}
+
+	// Generate HTML for store info
+	function getStoreInfoHTML(storeInfo) {
+		return '<div>' +
+			'<h2>' + storeInfo.name + '</h2>' + '<p>Description: ' + storeInfo.description + '</p>' + '<p>Hours: ' + storeInfo.hours + '</p>' + '<p> Phone: ' + storeInfo.phone + '</p' +
+			'</div>';
+	}
+
+	var stores = [
+		{
+			name: 'Jagruth Tech Pvt Ltd.',
+			location: {lat: 12.276452182955216, lng: 76.6495736518894},
+            description: 'we are an authorized dry waste plastic collector approved by Mysore City Corporation (MCC)',
+			hours: '8AM to 10PM',
+            phone: +09741730574,
+		},
+		{
+			name: 'Vijaya Businezz Solutionz',
+			location: {lat: 12.362729531187105, lng: 76.62096628941714},
+            description:'plastic recycler that recycles both domestic and Industrial (Company) waste or scrap.',
+			hours: '10am to 6pm',
+            phone: 09880192998
+		},
+		{
+			name: 'Zolopik E-Waste Recycling',
+			location: {lat: 12.97340670485953, lng: 77.59722678305054},
+            description: 'We offer E-Waste and Battery Recycling Services to Households, IT Companies, Industries, Office, Educational Institutions etc.',
+			hours: '9am - 8pm',
+            phone: 08884122253
+		},
+        {
+			name: 'Saahas Waste Management Private Limited',
+			location: {lat: 12.983574676170104, lng: 77.71232311909787},
+            description: 'a social enterprise that provides end-to-end waste management services',
+			hours: '10am - 6pm',
+            phone: 918041689889
+		},
+        {
+			name: 'M/s. KP INDUSTRIES',
+			location: {lat: 16.18329434035213, lng: 74.5048059617991},
+            description: 'Recycling center',
+			hours: '9am - 6pm',
+            phone: 08904179355
+		},
+        {
+			name: 'Common Bio Medical Waste Treatment Facility',
+			location: {lat: 16.36350992140895, lng: 75.66135951330297},
+            description: 'we offer medical waste management services',
+			hours: '9am - 6pm',
+            phone: 91063647647
+	    },
+        {
+			name: 'Nature Friendly Recycle Industries and Dry waste Handling',
+			location: {lat: 12.959542104979592, lng: 74.82558890394603},
+            description: 'a fully integrated service provider of Dry waste management services.',
+			hours: '9am - 6pm',
+            phone: 08023509001
+		},
+        {
+			name: 'Welt Recycling Private Limited',
+			location: {lat: 13.382952687350729, lng: 75.86910443554635},
+            description: 'a fully integrated service provider of waste management services.',
+			hours: '9am - 6pm',
+            phone: 08086309001
+		},
+        {
+			name: 'GSM Plastic Industries',
+			location: {lat: 15.513344236902489, lng: 74.92509930353167},
+            description: 'GSM Plastic Recycling Protects the Environment and Preserves resources by empowering Rag pickers, Plastic Waste handling workers and Indian citizens to Reduce, Reuse and Recycle.',
+			hours: '9am - 6pm',
+            phone: 09960586948
+		},
+        {
+			name: 'D&U plastic recycling',
+			location: {lat: 12.446264508487438, lng: 75.86011440721829},
+            description: 'leading plastic recycling center',
+			hours: '9am - 6pm',
+            phone: 09960586948
+		},
+        {
+			name: 'Cerebra - EWaste Recycling Plant Kolar',
+			location: {lat: 13.22511802139222, lng: 77.98240595029183},
+            description: 'We are one of the largest R2 certiﬁed E-waste recycling and refurbishing plant in the country',
+			hours: '9am - 6pm',
+            phone: 180042546969
+		},
+        {
+            name: 'New AG Traders',
+            location: {lat:16.524844196653067, lng: 77.41994696226807},
+            description:'recycling center',
+            hours:'9am - 7pm',
+            phone: 09110512902
+        },
+        {
+            name: 'Newtech recycling Pvt Ltd',
+            location:{lat: 15.127705775759942, lng:76.91729704415711},
+            description: 'leading recycling center',
+            hours: 'open 24/7',
+            phone:09110512902
+        },
+        {
+            name:'Think Recycling Pvt. Ltd.',
+            phone: 1800571009,
+            description: 'Think Recycling Private Limited (TRPL) actively Promotes environment friendly Reuse and Recycling of Electronics.',
+            location:{lat:12.93397730772238, lng:77.6805573433929}
+        },
+        {
+            name:'E-Parisaraa',
+            phone:09980147680,
+            description:'we are Indias first Government authorized electronic waste recyclers',
+            location: {lat:13.26748292236337, lng:77.26116107821981}
+        },
+        {
+            name:'Ecoglobe E-waste Recyclers',
+            phone:09901085167,
+            description: 'leading e-waste recycycler',
+            location:{lat:12.795056924094169, lng: 77.42943574761956}
+        },
+        {
+            name:'ECO BIRDD RECYCLING COMPANY PVT LTD',
+            phone:09901085167,
+            description: 'total e waste management solutions',
+            location:{lat:12.956150276744301, lng:77.52637374941604}
+        }
+	];
+
+	markStores(stores);
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRkvx2HJY84cr9DYOskb5wS7V-ZWth5_s&callback=initMap" async defer></script>
+</body>
+</html>

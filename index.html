@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Map Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style type="text/css">
+
+/* map needs width and height to appear */
+#map {
+	width: 900px;
+	max-width: 100%;
+	height: 580px;
+	float: right;
+}
+
+.controls {
+	margin-top: 10px;
+	border: 1px solid transparent;
+	border-radius: 2px 0 0 2px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	outline: none;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+	background-color: #fff;
+	padding: 5px 10px;
+	width: 300px;
+	font-family: Roboto;
+	font-size: 15px;
+	font-weight: 300;
+    float: right;
+}
+
+.controls:focus {
+	border-color: #4d90fe;
+}
+
+#store-list {
+	margin-top: 20px;
+}
+
+</style>
+
+</head>
+<body>
+<!-- this div will hold your map -->
+<div id="map"></div>
+<h3>LOCATE YOUR NEAREST WASTE RECYCLING PLANT!</h3>
+<input id="pac-input" class="controls" type="text" placeholder="Search for a location">
+<div id="store-list"></div>
+
+<script>
+function initMap() {
+	var myMapCenter = {lat: 15.3173, lng: 75.7139};
+
+	// Create a map object and specify the DOM element for display.
+	var map = new google.maps.Map(document.getElementById('map'), {
+		center: myMapCenter,
+		zoom: 6.8
+	});
+
+	var infoWindow = new google.maps.InfoWindow(); // Info window to display store information
+	var input = document.getElementById('pac-input');
+	var autocomplete = new google.maps.places.Autocomplete(input);
+	autocomplete.bindTo('bounds', map);
+
+	var marker = new google.maps.Marker({
+		map: map,
+		anchorPoint: new google.maps.Point(0, -29)
+	});
+
+	autocomplete.addListener('place_changed', function() {
+		infoWindow.close();
+		marker.setVisible(false);
+		var place = autocomplete.getPlace();
+		if (!place.geometry) {
+			window.alert("No details available for input: '" + place.name + "'");
+			return;
+		}
+
+		// If the place has a geometry, display it on the map
+		if (place.geometry.viewport) {
+			map.fitBounds(place.geometry.viewport);
+		} else {
+			map.setCenter(place.geometry.location);
+			map.setZoom(17);
+		}
+
+		marker.setPosition(place.geometry.location);
+		marker.setVisible(true);
+
+		var address = '';
+		if (place.address_components) {
+			address = [
+				(place.address_components[0] && place.address_components[0].short_name || ''),
+				(place.address_components[1] && place.address_components[1].short_name || ''),
+				(place.address_components[2] && place.address_components[2].short_name || '')
+			].join(' ');
+		}
+
+		infoWindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+		infoWindow.open(map, marker);
+
+		showStoresNearLocation(place.geometry.location);
+	});
+
+	function showStoresNearLocation(location) {
+		var stores = [
+			{
+				name: 'Jagruth Tech Pvt Ltd.',
+				location: {lat: 12.276452182955216, lng: 76.6495736518894},
+				description: 'we are an authorized dry waste plastic collector approved by Mysore City Corporation (MCC)',
+				hours: '8AM to 10PM',
+				phone: '+09741730574',
+			},
+			{
+				name: 'Vijaya Businezz Solutionz',
+				location: {lat: 12.362729531187105, lng: 76.62096628941714},
+				description: 'plastic recycler that recycles both domestic and Industrial (Company) waste or scrap.',
+				hours: '9AM to 6PM',
+				phone: '+09123456789',
+			},
+			// Add more store objects as needed
+		];
+
+		var storeList = document.getElementById('store-list');
+		storeList.innerHTML = '';
+
+		var bounds = new google.maps.LatLngBounds();
+		var distanceService = new google.maps.DistanceMatrixService();
+
+		stores.forEach(function(store) {
+			var storeLatLng = new google.maps.LatLng(store.location.lat, store.location.lng);
+
+			distanceService.getDistanceMatrix({
+				origins: [location],
+				destinations: [storeLatLng],
+				travelMode: 'DRIVING'
+			}, function(response, status) {
+				if (status === 'OK') {
+					var results = response.rows[0].elements;
+					var distance = results[0].distance.text;
+
+					var storeInfo = '<div><h2>' + store.name + '</h2>' +
+						'<p>Description: ' + store.description + '</p>' +
+						'<p>Hours: ' + store.hours + '</p>' +
+						'<p>Phone: ' + store.phone + '</p>' +
+						'<p>Distance: ' + distance + '</p></div>';
+
+					var storeItem = document.createElement('div');
+					storeItem.innerHTML = storeInfo;
+
+					storeList.appendChild(storeItem);
+				}
+			});
+
+			bounds.extend(storeLatLng);
+		});
+
+		map.fitBounds(bounds);
+	}
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap" async defer></script>
+
+</body>
+</html>
